@@ -112,9 +112,11 @@ const leaves = (function () {
 const body = document.body;
 const intro = $('#intro');
 const stageLogo = $('#stageLogo');
+const stageWelcome = $('#stageWelcome');
 const stageEnv = $('#stageEnvelope');
 const envWrap = $('#envelopeWrap');
 const envelope = $('#envelope');
+const card = $('#card');
 const seal = $('#seal');
 const hint = $('#envHint');
 const enterBtn = $('#enterBtn');
@@ -123,13 +125,21 @@ const site = $('#site');
 const skipBtn = $('#skipBtn');
 let opened = false, entered = false;
 
-// Stage 1 -> shimmer, then stage 2
-setTimeout(() => { const l = $('.logo-main'); if (l) l.classList.add('shimmer'); }, 2600);
-const toEnvelope = setTimeout(() => {
-  stageLogo.classList.add('leave');
-  stageEnv.classList.add('show');
-  setTimeout(() => envWrap.classList.add('floating'), 2600);
-}, 5200);
+// Timeline (milliseconds). Adjust these to speed up or slow down each stage.
+const TIMING = {
+  welcomeIn: 5200,   // welcome text starts easing in (logo has faded out by now)
+  welcomeOut: 9400,  // welcome text fades away
+  toSage: 9600,      // background changes from black to green
+  envelopeIn: 10400, // envelope arrives
+  float: 12000,      // envelope starts gently floating
+};
+const timers = [];
+const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+later(() => stageWelcome.classList.add('show'), TIMING.welcomeIn);
+later(() => stageWelcome.classList.add('out'), TIMING.welcomeOut);
+later(() => intro.classList.add('sage'), TIMING.toSage);
+later(() => stageEnv.classList.add('show'), TIMING.envelopeIn);
+later(() => envWrap.classList.add('floating'), TIMING.float);
 
 // Envelope parallax tilt
 if (finePointer && !prefersReduced) {
@@ -141,6 +151,16 @@ if (finePointer && !prefersReduced) {
   });
 }
 
+// Size the invitation card so it rises out of the envelope and the whole group stays centred
+function layoutOpen() {
+  const envH = envelope.offsetHeight;
+  const H = $('.card-inner', card).offsetHeight;
+  card.style.top = (envH * 0.55 - H) + 'px';
+  card.style.bottom = '45%';
+  envWrap.style.marginTop = Math.max(0, H - envH * 0.55 - 100) + 'px';
+}
+addEventListener('resize', () => { if (opened && !entered) layoutOpen(); });
+
 function openEnvelope() {
   if (opened) return;
   opened = true;
@@ -149,7 +169,7 @@ function openEnvelope() {
   hint.classList.add('hide');
   envWrap.classList.add('opened');
   envelope.classList.add('open');
-  skipBtn.style.opacity = 0;
+  layoutOpen();
 }
 seal.addEventListener('click', openEnvelope);
 envelope.addEventListener('click', e => { if (!opened && e.target.closest('.env-front,.env-flap,.env-back')) openEnvelope(); });
@@ -157,7 +177,7 @@ envelope.addEventListener('click', e => { if (!opened && e.target.closest('.env-
 function enterSite() {
   if (entered) return;
   entered = true;
-  clearTimeout(toEnvelope);
+  timers.forEach(clearTimeout);
   curtain.classList.add('go');
   setTimeout(() => {
     body.classList.remove('is-locked');
@@ -176,6 +196,7 @@ skipBtn.addEventListener('click', () => { enterSite(); });
 // Returning visitors in the same session skip straight in
 try {
   if (sessionStorage.getItem('az-intro-seen') === '1') {
+    timers.forEach(clearTimeout);
     intro.remove();
     body.classList.remove('is-locked');
     site.classList.add('visible');
