@@ -457,3 +457,76 @@ button{font-family:inherit;cursor:none;border:0;background:none;color:inherit}
 .footer p{font-size:.78rem;letter-spacing:.26em;text-transform:uppercase;margin-top:6px}
 .footer .f-fam{opacity:.6;font-size:.64rem}
 .gallery img{object-position:50% 78%}
+
+/* ===========================================================
+   INTRO v3 — black logo → welcome text → sage envelope
+   =========================================================== */
+
+#intro{background:#000;transition:background-color 1.8s ease, opacity 1.2s ease, visibility 1.2s}
+#intro.sage{background:#848b79}
+.intro-vignette{background:radial-gradient(circle at 50% 50%,rgba(201,167,122,.10),transparent 55%);transition:background 1.8s ease}
+#intro.sage .intro-vignette{background:radial-gradient(ellipse at center,rgba(255,255,255,.07) 0%,transparent 45%,rgba(40,46,36,.32) 100%)}
+
+/* Stage 1 — logo eases in and eases out */
+.logo-main{
+  width:min(320px,64vw);opacity:0;-webkit-mask-image:none;mask-image:none;
+  animation:logoSeq 5s ease-in-out .3s forwards;
+  filter:drop-shadow(0 0 26px rgba(201,167,122,.30));
+}
+@keyframes logoSeq{
+  0%{opacity:0;transform:scale(.94);filter:blur(10px) drop-shadow(0 0 26px rgba(201,167,122,.30))}
+  36%{opacity:1;transform:scale(1);filter:blur(0) drop-shadow(0 0 26px rgba(201,167,122,.30))}
+  62%{opacity:1;transform:scale(1);filter:blur(0) drop-shadow(0 0 26px rgba(201,167,122,.30))}
+  100%{opacity:0;transform:scale(1.06);filter:blur(10px) drop-shadow(0 0 26px rgba(201,167,122,.30))}
+}
+
+/* Stage 2 — welcome text, large, easing to centre */
+.stage-welcome{opacity:0;visibility:hidden;pointer-events:none;z-index:3;transition:opacity 1.2s ease}
+.stage-welcome.show{opacity:1;visibility:visible}
+.stage-welcome.out{opacity:0}
+.welcome-text{
+  font-family:'Pinyon Script',var(--serif);font-weight:400;
+  font-size:clamp(3.7rem,12.5vw,8.6rem);line-height:1.18;color:var(--gold-light);
+  display:flex;flex-direction:column;align-items:center;padding:0 5vw;
+  text-shadow:0 0 30px rgba(201,167,122,.25);
+}
+.wl{display:block;opacity:0;transform:translateY(70px) scale(1.14);filter:blur(10px)}
+.l2{font-size:.62em;margin:.02em 0}
+.stage-welcome.show .wl{animation:wlIn 2s cubic-bezier(.16,1,.3,1) forwards}
+.stage-welcome.show .l2{animation-delay:.5s}
+.stage-welcome.show .l3{animation-delay:1s}
+@keyframes wlIn{to{opacity:1;transform:none;filter:blur(0)}}
+
+/* Stage 3 — envelope on sage: quicker, smoother arrival */
+.stage-envelope{transition:opacity .8s ease}
+.envelope-wrap{transform:translateY(50px);opacity:0}
+.stage-envelope.show .envelope-wrap{animation:envArrive 1.1s cubic-bezier(.16,1,.3,1) .1s forwards}
+@keyframes envArrive{to{transform:none;opacity:1}}
+.env-hint{top:8vh;color:#fff;font-size:clamp(1.15rem,3vw,1.45rem);opacity:0;transition:opacity .9s ease .7s;text-shadow:0 1px 8px rgba(0,0,0,.18)}
+.stage-envelope.show .env-hint{opacity:1}
+.stage-envelope.show .env-hint.hide{opacity:0;transition-delay:0s}
+.env-back{box-shadow:0 30px 70px rgba(40,46,36,.45)}
+.envelope-wrap.opened{margin-top:0}
+.envelope-wrap{transition:margin-top 1.4s var(--ease) .3s}
+
+/* card: opens upward (JS sets top/bottom) */
+.card{transition:top 1.4s var(--ease) .45s, bottom 1.4s var(--ease) .45s;align-items:flex-start}
+.envelope.open .card{transform:none;left:5%;right:5%;height:auto;z-index:8}
+.card-inner{padding:34px 20px 30px}
+.card-circle{
+  display:block;width:112px;height:112px;margin:22px auto 0;border-radius:50%;object-fit:cover;
+  box-shadow:0 0 0 3px #fff,0 0 0 4px var(--gold),0 10px 24px rgba(0,0,0,.18);
+}
+.enter-btn{padding:12px 44px}
+
+/* logo sits under the opened invitation */
+.env-logo{
+  position:absolute;left:50%;top:calc(100% + 54px);width:58px;transform:translateX(-50%);
+  opacity:0;transition:opacity 1.2s ease 1.6s;pointer-events:none;
+}
+.envelope-wrap.opened .env-logo{opacity:.95}
+
+.skip{position:absolute;top:4vh;right:5vw;bottom:auto;left:auto;z-index:30;opacity:0;animation:fadeUp 1.2s ease 1.2s forwards}
+.skip:hover{opacity:1}
+@media (max-height:760px){.card-circle{width:84px;height:84px;margin-top:14px}.card-inner{padding-top:26px;padding-bottom:22px}.env-logo{width:44px;top:calc(100% + 44px)}}
+.stage-logo{pointer-events:none}
