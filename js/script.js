@@ -174,6 +174,8 @@ function fitEnvelope() {
   }
   const fit = Math.max(.42, Math.min(1, (innerHeight - (opened ? 104 : 56)) / need));
   envFit.style.setProperty('--fit', fit.toFixed(3));
+  // only transform when we really need to shrink: any transform on the group makes the text soft
+  envFit.style.transform = fit < .995 ? `scale(${fit.toFixed(3)})` : 'none';
 }
 addEventListener('resize', () => { if (opened && !entered) layoutOpen(); else fitEnvelope(); });
 addEventListener('orientationchange', () => setTimeout(() => { if (opened && !entered) layoutOpen(); else fitEnvelope(); }, 250));
@@ -188,6 +190,8 @@ function openEnvelope() {
   envWrap.classList.add('opened');
   envelope.classList.add('open');
   layoutOpen();
+  // once the flap has finished turning, drop the 3D layers so the card text renders pin-sharp
+  setTimeout(() => { envWrap.classList.add('settled'); envelope.classList.add('settled'); }, 2300);
 }
 seal.addEventListener('click', openEnvelope);
 envelope.addEventListener('click', e => { if (!opened && e.target.closest('.env-front,.env-flap,.env-back')) openEnvelope(); });
