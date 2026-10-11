@@ -127,17 +127,17 @@ let opened = false, entered = false;
 
 // Timeline (milliseconds). Adjust these to speed up or slow down each stage.
 const TIMING = {
-  welcomeIn: 5200,   // welcome text starts easing in (logo has faded out by now)
-  welcomeOut: 9400,  // welcome text fades away
-  toSage: 9600,      // background changes from black to green
-  envelopeIn: 10400, // envelope arrives
-  float: 12000,      // envelope starts gently floating
+  welcomeIn: 5000,   // welcome line starts easing in (logo has faded out by now)
+  welcomeOut: 8800,  // welcome line fades away
+  toSage: 9000,      // background changes from white to green
+  envelopeIn: 9800,  // envelope arrives
+  float: 11300,      // envelope starts gently floating
 };
 const timers = [];
 const later = (fn, ms) => timers.push(setTimeout(fn, ms));
 later(() => stageWelcome.classList.add('show'), TIMING.welcomeIn);
 later(() => stageWelcome.classList.add('out'), TIMING.welcomeOut);
-later(() => intro.classList.add('sage'), TIMING.toSage);
+later(() => { intro.classList.add('sage'); intro.dataset.cursorTheme = 'dark'; }, TIMING.toSage);
 later(() => stageEnv.classList.add('show'), TIMING.envelopeIn);
 later(() => envWrap.classList.add('floating'), TIMING.float);
 
@@ -224,7 +224,7 @@ addEventListener('scroll', () => {
   if (!prefersReduced && scrollY < innerHeight * 1.2) heroBg.style.transform = `scale(1.08) translateY(${scrollY * .18}px)`;
 }, { passive: true });
 
-/* ---------------- Bouquet cursor ---------------- */
+/* ---------------- Rings cursor ---------------- */
 (function cursor() {
   if (!finePointer) return;
   const c = $('#cursor');
@@ -261,8 +261,8 @@ addEventListener('scroll', () => {
 
   (function loop() {
     cx += (x - cx) * .22; cy += (y - cy) * .22;
-    // hotspot is the top of the bouquet
-    c.style.transform = `translate3d(${cx - 23}px,${cy - 6}px,0)`;
+    // hotspot is the centre of the rings
+    c.style.transform = `translate3d(${cx - 23}px,${cy - 23}px,0)`;
     requestAnimationFrame(loop);
   })();
 })();
