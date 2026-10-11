@@ -940,3 +940,11 @@ input,textarea{border-radius:0}
 
 /* photo frames always follow the photo box, whatever shape the file is */
 .m-img{height:100%}
+
+/* ---------- Sharp card text: no 3D / compositing layers once the envelope is open ---------- */
+.env-fit{transform:none}
+.envelope-wrap.settled{perspective:none;transform:none;animation:none;opacity:1}
+.envelope.settled{transform-style:flat;transform:none !important;animation:none;will-change:auto}
+.card,.card-inner{-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;backface-visibility:hidden}
+.env-label{bottom:9%}
+@media (min-width:600px){.env-label{bottom:11%}}
