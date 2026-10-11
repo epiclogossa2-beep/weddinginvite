@@ -152,14 +152,32 @@ if (finePointer && !prefersReduced) {
 }
 
 // Size the invitation card so it rises out of the envelope and the whole group stays centred
+const envFit = $('#envFit');
 function layoutOpen() {
   const envH = envelope.offsetHeight;
   const H = $('.card-inner', card).offsetHeight;
   card.style.top = (envH * 0.55 - H) + 'px';
   card.style.bottom = '45%';
   envWrap.style.marginTop = Math.max(0, H - envH * 0.55 - 100) + 'px';
+  fitEnvelope();
 }
-addEventListener('resize', () => { if (opened && !entered) layoutOpen(); });
+// Scale the whole envelope group down when the screen is too short (small phones, landscape)
+function fitEnvelope() {
+  if (!envFit) return;
+  const envH = envelope.offsetHeight;
+  let need;
+  if (opened) {
+    const H = $('.card-inner', card).offsetHeight;
+    need = H + envH * 0.45 + 110;           // card above + envelope + logo below
+  } else {
+    need = envH + 140;                       // envelope + hint above
+  }
+  const fit = Math.max(.42, Math.min(1, (innerHeight - (opened ? 104 : 56)) / need));
+  envFit.style.setProperty('--fit', fit.toFixed(3));
+}
+addEventListener('resize', () => { if (opened && !entered) layoutOpen(); else fitEnvelope(); });
+addEventListener('orientationchange', () => setTimeout(() => { if (opened && !entered) layoutOpen(); else fitEnvelope(); }, 250));
+fitEnvelope();
 
 function openEnvelope() {
   if (opened) return;
@@ -350,8 +368,10 @@ $$('.swatches button').forEach(b => b.addEventListener('click', () => {
 /* ---------- Mobile menu + active link ---------- */
 (function menu() {
   const t = $('#navToggle'), n = $('#navLinks');
-  const close = () => { n.classList.remove('open'); t.setAttribute('aria-expanded', 'false'); };
-  t.addEventListener('click', () => { const o = n.classList.toggle('open'); t.setAttribute('aria-expanded', o); });
+  const close = () => { n.classList.remove('open'); t.setAttribute('aria-expanded', 'false'); body.classList.remove('menu-open'); };
+  addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  addEventListener('resize', () => { if (innerWidth > 760) close(); });
+  t.addEventListener('click', () => { const o = n.classList.toggle('open'); t.setAttribute('aria-expanded', o); body.classList.toggle('menu-open', o); });
   $$('a', n).forEach(a => a.addEventListener('click', close));
   const links = $$('a[href^="#"]', n);
   const secs = links.map(a => $(a.getAttribute('href'))).filter(Boolean);
@@ -366,7 +386,7 @@ $('#addCal').addEventListener('click', () => {
   const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AZ Wedding//EN', 'BEGIN:VEVENT',
     'UID:amelia-zivan-20270410@wedding', 'DTSTAMP:20260101T000000Z',
     'DTSTART;VALUE=DATE:20270410', 'DTEND;VALUE=DATE:20270411',
-    'SUMMARY:Amelia & Zivan\'s Wedding', 'LOCATION:Pont de Val',
+    'SUMMARY:Amelia & Zivan\'s wedding', 'LOCATION:Pont de Val',
     'DESCRIPTION:We can\'t wait to celebrate with you!', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
