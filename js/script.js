@@ -210,11 +210,18 @@ let io;
 function runReveals() {
   if (io) return;
   io = new IntersectionObserver(entries => {
-    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        // photos are revealed with a clip-path, so we watch their figure and reveal the photo inside
+        const t = en.target._reveal || en.target;
+        t.classList.add('in'); io.unobserve(en.target);
+      }
+    });
   }, { threshold: .15 });
   $$('.reveal').forEach((el, i) => {
     el.style.transitionDelay = (el.closest('.hero') ? i * 0.15 : 0) + 's';
-    io.observe(el);
+    const fig = el.classList.contains('m-img') ? el.closest('.m') : null;
+    if (fig) { fig._reveal = el; io.observe(fig); } else io.observe(el);
   });
 }
 const nav = $('#nav');
@@ -421,5 +428,93 @@ $('#addCal').addEventListener('click', () => {
       status.textContent = 'Sorry, that did not send. Please check your connection and try again.';
       btn.disabled = false; btn.firstElementChild.textContent = 'Send my reply';
     }
+  });
+})();
+
+
+/* ===========================================================
+   v5 additions — premium interactions
+   =========================================================== */
+
+/* ---------- Scroll progress hairline ---------- */
+(function progress() {
+  const bar = $('#progress'); if (!bar) return;
+  const update = () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    bar.style.width = (h > 0 ? Math.min(100, scrollY / h * 100) : 0) + '%';
+  };
+  addEventListener('scroll', update, { passive: true }); update();
+})();
+
+/* ---------- Photo parallax (gentle drift at different speeds) ---------- */
+(function parallax() {
+  if (prefersReduced) return;
+  const items = $$('[data-speed]'); if (!items.length) return;
+  let ticking = false;
+  function run() {
+    ticking = false;
+    if (innerWidth < 760) { items.forEach(el => (el.style.transform = '')); return; }
+    items.forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > innerHeight + 200) return;
+      const offset = (r.top + r.height / 2) - innerHeight / 2;
+      el.style.transform = `translate3d(0,${(offset * +el.dataset.speed).toFixed(1)}px,0)`;
+    });
+  }
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(run); } }, { passive: true });
+  addEventListener('resize', run);
+  run();
+})();
+
+/* ---------- Photo viewer (click any collage photo) ---------- */
+(function lightbox() {
+  const lb = $('#lb'), img = $('#lbImg');
+  const photos = $$('.m-img img'); if (!lb || !photos.length) return;
+  let i = 0;
+  function show(n, instant) {
+    i = (n + photos.length) % photos.length;
+    if (instant) { img.src = photos[i].src; img.alt = photos[i].alt; return; }
+    img.classList.add('swap');
+    setTimeout(() => { img.src = photos[i].src; img.alt = photos[i].alt; img.classList.remove('swap'); }, 220);
+  }
+  function open(n) { show(n, true); lb.hidden = false; requestAnimationFrame(() => lb.classList.add('open')); body.style.overflow = 'hidden'; }
+  function close() { lb.classList.remove('open'); body.style.overflow = ''; }
+  photos.forEach((p, n) => p.closest('.m-img').addEventListener('click', () => open(n)));
+  $('#lbClose').addEventListener('click', close);
+  $('#lbPrev').addEventListener('click', () => show(i - 1));
+  $('#lbNext').addEventListener('click', () => show(i + 1));
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(i - 1);
+    if (e.key === 'ArrowRight') show(i + 1);
+  });
+})();
+
+/* ---------- Itinerary: highlight the step nearest the middle of the screen ---------- */
+(function timelineActive() {
+  const items = $$('#timeline li'); if (!items.length) return;
+  function run() {
+    let best = null, bestD = 1e9;
+    items.forEach(li => {
+      const r = li.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - innerHeight / 2);
+      if (d < bestD) { bestD = d; best = li; }
+    });
+    items.forEach(li => li.classList.toggle('active', li === best && bestD < innerHeight * .4));
+  }
+  addEventListener('scroll', run, { passive: true }); run();
+})();
+
+/* ---------- Soft 3D tilt on the venue cards ---------- */
+(function tilt() {
+  if (!finePointer || prefersReduced) return;
+  $$('.detail, .dc, .stay-card').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      el.style.transform = `perspective(900px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-4px)`;
+    });
+    el.addEventListener('mouseleave', () => { el.style.transform = ''; });
   });
 })();
