@@ -359,9 +359,8 @@ button{font-family:inherit;cursor:none;border:0;background:none;color:inherit}
 .welcome .gallery{padding-bottom:0}
 
 /* details */
-.venue-photo{margin:10px auto 50px;max-width:980px;overflow:hidden;position:relative}
-.venue-photo img{width:100%;aspect-ratio:16/8;object-fit:cover;transition:transform 2s var(--ease)}
-.venue-photo:hover img{transform:scale(1.04)}
+.venue-photo{margin:10px auto 50px;max-width:980px;position:relative}
+.venue-photo img{display:block;transition:transform 2s var(--ease)}
 .venue-photo{width:min(980px,92vw)}
 .details .container{width:min(980px,92vw)}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,3vw,40px)}
@@ -755,3 +754,189 @@ button{font-family:inherit;cursor:none;border:0;background:none;color:inherit}
 .lb-x{top:14px;right:16px;font-size:2.8rem !important}
 .lb-prev{left:10px;top:50%;transform:translateY(-50%)}
 .lb-next{right:10px;top:50%;transform:translateY(-50%)}
+
+/* ===========================================================
+   v6 — client edits, premium finish, full responsiveness
+   =========================================================== */
+:root{
+  --foil:linear-gradient(100deg,#8d6a2f 0%,#b8913f 26%,#d6b66c 50%,#b08a3e 74%,#8d6a2f 100%);
+  --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px);--safe-r:env(safe-area-inset-right,0px);
+}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:64px}
+body{overflow-x:clip}
+body.is-locked{height:100vh;height:100dvh}
+body.menu-open{overflow:hidden}
+::selection{background:var(--gold);color:#fff}
+:focus-visible{outline:2px solid var(--gold-deep);outline-offset:3px}
+#intro :focus-visible,.hero :focus-visible,.footer :focus-visible{outline-color:var(--gold-light)}
+
+/* ---------- Intro: welcome message in gold, in a finer typeface ---------- */
+.welcome-text{white-space:normal;display:flex;flex-direction:column;align-items:center;padding:0 6vw;max-width:100vw}
+.welcome-text .wl{background:var(--foil);background-size:100% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.welcome-text .wl-a{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:clamp(1.15rem,4.6vw,2.2rem);letter-spacing:.07em;line-height:1.3;
+}
+.welcome-text .wl-b{
+  font-family:'Pinyon Script',var(--serif);font-weight:400;font-style:normal;
+  font-size:clamp(3.4rem,15vw,7rem);line-height:1.25;padding:.04em .12em .12em;letter-spacing:.01em;margin-top:.1em;
+}
+.stage-welcome.show .wl-b{animation-delay:.7s}
+.welcome-rule{margin-top:14px;background:linear-gradient(90deg,transparent,var(--gold-deep),transparent)}
+.stage-welcome.show .welcome-rule{width:clamp(70px,16vw,120px)}
+
+/* ---------- Intro: hint matches "Skip intro", but smaller ---------- */
+.env-hint{
+  font-family:var(--sans);font-style:normal;font-weight:400;
+  font-size:.58rem;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(255,255,255,.85);text-shadow:none;top:max(8vh,calc(var(--safe-t) + 52px));
+}
+.skip{top:max(4vh,calc(var(--safe-t) + 16px));right:max(5vw,calc(var(--safe-r) + 16px));padding:10px 4px}
+
+/* ---------- Envelope label: two lines, smaller ---------- */
+.env-label{bottom:9%}
+.env-label b{font-size:inherit;letter-spacing:0;line-height:1.15}
+.env-label .el-names{display:block;font-family:var(--serif);font-weight:500;font-size:clamp(.82rem,2.5vw,1.02rem);letter-spacing:.07em;text-transform:none;margin:0;color:inherit;-webkit-text-fill-color:transparent}
+.env-label .el-wed{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(.7rem,2vw,.84rem);letter-spacing:.34em;text-indent:.34em;text-transform:none;margin:2px 0 0;color:inherit;-webkit-text-fill-color:transparent}
+.env-label .el-date{margin-top:7px;font-size:clamp(.44rem,1.25vw,.54rem);letter-spacing:.38em}
+
+/* ---------- Envelope: always fits the screen (portrait, landscape, tiny phones) ---------- */
+.env-fit{position:relative;display:flex;justify-content:center;width:100%;transform:scale(var(--fit,1));transform-origin:50% 50%}
+.envelope-wrap{width:min(580px,90vw,calc((100vh - 150px) * 1.45));width:min(580px,90vw,calc((100dvh - 150px) * 1.45))}
+.card .countdown div{min-width:0;flex:1 1 0}
+@media (max-width:420px){
+  .card-inner{padding:34px 12px 28px}
+  .card .countdown div{padding:0 clamp(4px,1.6vw,10px)}
+  .card .countdown b{font-size:clamp(1.15rem,6vw,1.5rem)}
+  .card .countdown small{font-size:.46rem;letter-spacing:.18em}
+  .card-line{font-size:.54rem;letter-spacing:.22em}
+  .enter-btn{padding:13px 40px;letter-spacing:.34em}
+}
+
+/* ---------- Gold foil type for names & emphasis ---------- */
+.section-title em{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;padding-right:.04em}
+.section-title::after{
+  content:"";display:block;width:84px;height:1px;margin:26px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.section-title{text-wrap:balance}
+.lead{text-wrap:pretty;font-weight:300;color:#4f5448}
+.quote,.m-cap,.parents p{text-wrap:balance}
+
+/* ---------- Photos: no numbers; venue gets the gold offset frame ---------- */
+.m figcaption{display:none}
+.venue-photo{
+  position:relative;overflow:visible;isolation:isolate;
+  width:min(980px,calc(92vw - 16px));margin:10px auto 64px;
+}
+.venue-photo::before{
+  content:"";position:absolute;inset:0;border:1px solid var(--gold);
+  transform:translate(16px,16px);z-index:-1;pointer-events:none;
+}
+.vp-img{overflow:hidden;background:#dfe3d6;box-shadow:0 24px 50px rgba(47,52,43,.16)}
+.vp-img img{width:100%;aspect-ratio:16/8;object-fit:cover}
+.venue-photo:hover .vp-img img{transform:scale(1.04)}
+
+/* ---------- Nav: blur lives on a layer so the mobile menu can fill the screen ---------- */
+.nav{padding-left:max(clamp(20px,4vw,56px),var(--safe-l));padding-right:max(clamp(20px,4vw,56px),var(--safe-r));padding-top:calc(18px + var(--safe-t))}
+.nav.scrolled{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;padding-top:calc(10px + var(--safe-t))}
+.nav::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .5s;
+  background:rgba(61,67,57,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(201,167,122,.25);
+}
+.nav.scrolled::before{opacity:1}
+.nav-toggle{width:44px;height:44px;margin-right:-8px}
+.nav-toggle span{left:10px;right:10px}
+.nav-toggle span:first-child{top:16px}.nav-toggle span:last-child{top:27px}
+.nav-toggle[aria-expanded=true] span:first-child,.nav-toggle[aria-expanded=true] span:last-child{top:21px}
+@media (max-width:900px) and (min-width:761px){.nav nav a{letter-spacing:.18em}.nav nav{gap:16px}}
+@media(max-width:760px){
+  .nav nav{height:100vh;height:100dvh;padding:calc(var(--safe-t) + 20px) 20px calc(var(--safe-b) + 20px)}
+  .nav nav a:not(.nav-cta){font-family:var(--serif);font-size:1.7rem !important;letter-spacing:.12em;text-transform:none}
+  .nav-cta{margin-top:10px}
+}
+
+/* ---------- Hero ---------- */
+@supports (min-height:100dvh){
+  .hero{min-height:max(100dvh,640px)}
+  @media (max-width:1099px){.hero{min-height:max(135dvh,900px)}}
+}
+.hero-content{padding-left:max(20px,var(--safe-l));padding-right:max(20px,var(--safe-r))}
+.hero-names{text-shadow:0 2px 30px rgba(20,24,16,.35)}
+@media (max-width:480px){
+  .hero-crest{width:68px}
+  .hero-date{letter-spacing:.24em}
+  .hero-venue{letter-spacing:.4em}
+  .countdown-hero div{padding:0 clamp(6px,2.4vw,12px)}
+  .countdown-hero b{font-size:clamp(1.6rem,8vw,2.2rem)}
+  .countdown-hero small{font-size:.5rem;letter-spacing:.2em}
+  .btn-gold{padding:15px 32px;letter-spacing:.28em}
+}
+@media (max-height:520px) and (orientation:landscape){
+  .hero,.hero{min-height:max(100dvh,560px)}
+  .hero-content{padding-top:80px;padding-bottom:56px}
+  .hero-crest{width:52px;margin-bottom:8px}
+  .scroll-cue{display:none}
+}
+
+/* ---------- Welcome / details / dress code / form at small sizes ---------- */
+@media (max-width:440px){
+  .parents{flex-direction:column;align-items:center;gap:20px}
+  .parents i{width:60px;height:1px;align-self:center;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+  .date-block{gap:0 14px}
+  .detail{padding:38px 18px 34px}
+  .swatches{gap:12px}
+  .swatches button{width:50px;height:50px}
+  .timeline{max-width:100%;padding:0 4px}
+  .faq summary{font-size:1.2rem}
+  .stay-card{padding:38px 20px}
+}
+.stepper button{width:44px;height:44px}
+.faq summary{min-height:56px}
+input,textarea{border-radius:0}
+.fld input,.fld textarea{font-size:max(16px,1rem)}   /* stops iOS zooming into fields */
+.btn-dark,.btn-line,.btn-gold{min-height:44px;justify-content:center}
+
+/* ---------- Footer ---------- */
+.footer{position:relative;padding:72px 20px calc(60px + var(--safe-b))}
+.footer::before{content:"";position:absolute;top:0;left:50%;width:min(320px,60vw);height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.footer .f-love{margin-top:26px;font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:.12em;font-size:1.05rem;color:var(--gold-light);opacity:.9}
+
+/* ---------- Big screens scale up gracefully ---------- */
+@media (min-width:1700px){html{font-size:112.5%}}
+@media (min-width:2200px){html{font-size:125%}}
+
+/* ---------- Lightbox on phones ---------- */
+@media (max-width:600px){
+  .lb img{max-width:96vw}
+  .lb-prev{left:0}.lb-next{right:0}
+}
+
+/* ---------- Touch devices: no hover-only motion ---------- */
+@media (hover:none){
+  .venue-photo:hover .vp-img img,.m-img.in:hover img{transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .card-names,.env-label b{animation:none}
+}
+@media (max-width:760px){
+  .venue-photo{width:calc(92vw - 10px);margin-bottom:48px}
+  .venue-photo::before{transform:translate(10px,10px)}
+  .vp-img img{aspect-ratio:4/3}
+}
+
+/* envelope label: keep clear of the wax seal on small envelopes */
+.env-label{bottom:5%}
+.env-label .el-names{font-size:clamp(.78rem,2.4vw,1rem)}
+.env-label .el-wed{font-size:clamp(.64rem,1.9vw,.82rem);margin-top:1px}
+.env-label .el-date{margin-top:5px;font-size:clamp(.4rem,1.2vw,.52rem)}
+@media (min-width:600px){.env-label{bottom:8%}}
+/* landscape phones: keep the card wide enough to read; the fit-scale shrinks the whole group */
+.envelope-wrap{width:max(min(580px,90vw,calc((100vh - 150px) * 1.45)),min(440px,90vw))}
+@supports (height:100dvh){.envelope-wrap{width:max(min(580px,90vw,calc((100dvh - 150px) * 1.45)),min(440px,90vw))}}
+
+/* photo frames always follow the photo box, whatever shape the file is */
+.m-img{height:100%}
