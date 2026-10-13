@@ -14,9 +14,6 @@ const CONFIG = {
 
   // --- Venue map link (opens Google Maps). Replace with the exact Google Maps share link when you have it. ---
   venueMapUrl: 'https://www.google.com/maps/search/?api=1&query=Pont+de+Val%2C+212+Boundary+Road%2C+Parys%2C+9585%2C+Free+State%2C+South+Africa',
-
-  // --- Hotel booking: paste the booking link here (leave '' to show "coming soon") ---
-  hotelBookingUrl: '',
 };
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -250,7 +247,7 @@ const nav = $('#nav');
 const heroBg = $('#heroBg');
 addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', scrollY > 60);
-  if (!prefersReduced && scrollY < innerHeight * 1.2) heroBg.style.transform = `scale(1.08) translateY(${scrollY * .18}px)`;
+  if (!prefersReduced && scrollY < innerHeight) heroBg.style.transform = `translate3d(0,${(scrollY * .1).toFixed(1)}px,0)`;
 }, { passive: true });
 
 /* ---------------- Rings cursor ---------------- */
@@ -352,16 +349,8 @@ addEventListener('scroll', () => {
   new IntersectionObserver((e, o) => { if (e[0].isIntersecting) { tl.classList.add('in'); o.disconnect(); } }, { threshold: .25 }).observe(tl);
 })();
 
-/* ---------- Map + hotel links ---------- */
+/* ---------- Map links ---------- */
 $$('[data-map]').forEach(a => { a.href = CONFIG.venueMapUrl; });
-(function hotel() {
-  const b = $('#bookBtn'), note = $('#bookNote');
-  if (CONFIG.hotelBookingUrl) { b.href = CONFIG.hotelBookingUrl; }
-  else {
-    b.removeAttribute('href'); b.style.opacity = .55; b.style.pointerEvents = 'none';
-    note.textContent = 'Booking link coming soon';
-  }
-})();
 
 /* ---------- Dress code: names of the colours to avoid ---------- */
 $$('.avoid .av-row button').forEach(b => b.addEventListener('click', () => {
@@ -446,16 +435,22 @@ $('#addCal').addEventListener('click', () => {
       _template: 'table', _captcha: 'false', _replyto: form.elements.email.value.trim(),
     };
     btn.disabled = true; btn.firstElementChild.textContent = 'Sending...';
+    const debug = new URLSearchParams(location.search).has('debug');
     try {
       const res = await fetch('https://formsubmit.co/ajax/' + CONFIG.rsvpEmail, {
         method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data),
       });
       const out = await res.json().catch(() => ({}));
-      if (!res.ok || out.success === 'false' || out.success === false) throw new Error(out.message || 'fail');
+      if (!res.ok || out.success === 'false' || out.success === false) throw new Error(out.message || ('HTTP ' + res.status));
       form.hidden = true; $('#rsvpThanks').hidden = false;
       $('#rsvpThanks').scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch (err) {
-      status.textContent = 'Sorry, that did not send. Please check your connection and try again.';
+      console.error('RSVP send failed:', err);
+      // never leave a guest stuck: offer the same reply as a ready-written email
+      const body = Object.entries(data).filter(([k]) => k[0] !== '_').map(([k, v]) => `${k}: ${v}`).join('\n');
+      const mail = `mailto:${CONFIG.rsvpEmail}?subject=${encodeURIComponent(data._subject)}&body=${encodeURIComponent(body)}`;
+      status.innerHTML = 'Sorry, that did not send. Please try again, or <a class="rsvp-fallback" href="' + mail + '">send your reply by email instead</a>' +
+        (debug ? '<small class="rsvp-fallback">Debug: ' + String(err.message).replace(/[<>&]/g, '') + '</small>' : '');
       btn.disabled = false; btn.firstElementChild.textContent = 'Send my reply';
     }
   });
