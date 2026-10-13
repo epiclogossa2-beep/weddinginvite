@@ -3,8 +3,8 @@
    Edit the CONFIG block below to change date / greeting.
    =========================================================== */
 const CONFIG = {
-  // 10 April 2027, 00:00 South Africa time (UTC+2). Change the time when the ceremony time is known.
-  weddingDate: new Date('2027-04-10T00:00:00+02:00'),
+  // Counts down to the ceremony: 10 April 2027, 15:00 South Africa time (UTC+2).
+  weddingDate: new Date('2027-04-10T15:00:00+02:00'),
   defaultGreeting: 'Dear Guest,',
   // Personalised links: yoursite.com/?guest=The-Naidoo-Family  ->  "Dear The Naidoo Family,"
   guestParam: 'guest',
@@ -363,6 +363,12 @@ $$('[data-map]').forEach(a => { a.href = CONFIG.venueMapUrl; });
   }
 })();
 
+/* ---------- Dress code: names of the colours to avoid ---------- */
+$$('.avoid .av-row button').forEach(b => b.addEventListener('click', () => {
+  $$('.avoid .av-row button').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel'); $('#avoidName').textContent = b.dataset.name;
+}));
+
 /* ---------- Dress code swatches ---------- */
 $$('.swatches button').forEach(b => b.addEventListener('click', () => {
   $$('.swatches button').forEach(x => x.classList.remove('sel'));
@@ -389,9 +395,9 @@ $$('.swatches button').forEach(b => b.addEventListener('click', () => {
 $('#addCal').addEventListener('click', () => {
   const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AZ Wedding//EN', 'BEGIN:VEVENT',
     'UID:amelia-zivan-20270410@wedding', 'DTSTAMP:20260101T000000Z',
-    'DTSTART;VALUE=DATE:20270410', 'DTEND;VALUE=DATE:20270411',
+    'DTSTART:20270410T120000Z', 'DTEND:20270410T210000Z',   // 14:00 arrival to 23:00 (SAST)
     'SUMMARY:Amelia & Zivan\'s wedding', 'LOCATION:Pont de Val',
-    'DESCRIPTION:We can\'t wait to celebrate with you!', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    'DESCRIPTION:Guest arrival 2:00 PM\\, ceremony 3:00 PM\\, reception from 5:30 PM. We can\'t wait to celebrate with you!', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
   a.download = 'Amelia-and-Zivan-Wedding.ics'; a.click();
@@ -540,5 +546,16 @@ $('#addCal').addEventListener('click', () => {
       el.style.transform = `perspective(900px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-4px)`;
     });
     el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+  });
+})();
+
+
+/* ---------- Image filename fallbacks (e.g. "venue 2.jpg" vs "venue_2.jpg") ---------- */
+(function imgFallbacks() {
+  $$('img[data-fallbacks]').forEach(img => {
+    const list = img.dataset.fallbacks.split(',').map(x => x.trim()).filter(Boolean);
+    const next = () => { const n = list.shift(); if (n) img.src = n; };
+    img.addEventListener('error', next);
+    if (img.complete && img.naturalWidth === 0) next();   // it already failed before this script ran
   });
 })();
