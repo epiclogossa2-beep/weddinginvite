@@ -13,7 +13,7 @@ const CONFIG = {
   rsvpEmail: 'epiclogossa2@gmail.com',
 
   // --- Venue map link (opens Google Maps). Replace with the exact Google Maps share link when you have it. ---
-  venueMapUrl: 'https://www.google.com/maps/search/?api=1&query=Pont+de+Val',
+  venueMapUrl: 'https://www.google.com/maps/search/?api=1&query=Pont+de+Val%2C+212+Boundary+Road%2C+Parys%2C+9585%2C+Free+State%2C+South+Africa',
 
   // --- Hotel booking: paste the booking link here (leave '' to show "coming soon") ---
   hotelBookingUrl: '',
@@ -396,11 +396,11 @@ $('#addCal').addEventListener('click', () => {
   const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AZ Wedding//EN', 'BEGIN:VEVENT',
     'UID:amelia-zivan-20270410@wedding', 'DTSTAMP:20260101T000000Z',
     'DTSTART:20270410T120000Z', 'DTEND:20270410T210000Z',   // 14:00 arrival to 23:00 (SAST)
-    'SUMMARY:Amelia & Zivan\'s wedding', 'LOCATION:Pont de Val',
+    'SUMMARY:Zivan & Amelia\'s wedding', 'LOCATION:Pont de Val\\, 212 Boundary Road\\, Parys\\, 9585\\, Free State\\, South Africa',
     'DESCRIPTION:Guest arrival 2:00 PM\\, ceremony 3:00 PM\\, reception from 5:30 PM. We can\'t wait to celebrate with you!', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
-  a.download = 'Amelia-and-Zivan-Wedding.ics'; a.click();
+  a.download = 'Zivan-and-Amelia-Wedding.ics'; a.click();
 });
 
 /* ---------- RSVP form ---------- */
