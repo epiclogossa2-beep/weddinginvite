@@ -611,7 +611,7 @@ button{font-family:inherit;cursor:none;border:0;background:none;color:inherit}
 
 /* ---------- Hero: new photo ---------- */
 .hero{display:flex;min-height:max(100vh,640px)}
-.hero-bg{background-image:url("../images/couple-2.jpg");background-position:41% 72%}
+.hero-bg{background-image:url("../images/couple-2.jpeg");background-position:41% 72%}
 .hero-overlay{background:linear-gradient(180deg,rgba(36,40,32,.62) 0%,rgba(36,40,32,.10) 34%,rgba(36,40,32,.10) 62%,rgba(36,40,32,.72) 100%)}
 .hero-content{width:100%;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:104px 20px 76px}
 .hero-top,.hero-bottom{display:flex;flex-direction:column;align-items:center}
