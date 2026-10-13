@@ -78,7 +78,7 @@ const leaves = (function () {
       a: .35 + Math.random() * .45,
     };
   }
-  const count = innerWidth < 700 ? 8 : 15;   // fewer leaves = calmer; raise these numbers for more
+  const count = innerWidth < 700 ? 4 : 8;   // fewer leaves = calmer; raise these numbers for more
   for (let i = 0; i < count; i++) items.push(make(true));
 
   function drawLeaf(l) {
