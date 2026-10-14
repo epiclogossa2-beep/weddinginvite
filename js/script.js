@@ -13,7 +13,7 @@ const CONFIG = {
   rsvpEmail: 'zivanandamelia@gmail.com',
   // OPTIONAL, more reliable: paste a free Web3Forms access key here (web3forms.com, create it with the email above).
   // When this is filled in, replies are sent through Web3Forms instead of FormSubmit and no activation step is needed.
-  web3formsKey: '',
+  web3formsKey: '7e264203-81fc-4d0f-9b9e-6cdd219af4f8',
 
   // --- Venue map link (opens Google Maps). Replace with the exact Google Maps share link when you have it. ---
   venueMapUrl: 'https://www.google.com/maps/search/?api=1&query=Pont+de+Val%2C+212+Boundary+Road%2C+Parys%2C+9585%2C+Free+State%2C+South+Africa',
