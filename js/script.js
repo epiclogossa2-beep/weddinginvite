@@ -11,6 +11,9 @@ const CONFIG = {
 
   // --- RSVP: confirmations are emailed here (via FormSubmit.co, no server needed) ---
   rsvpEmail: 'zivanandamelia@gmail.com',
+  // OPTIONAL, more reliable: paste a free Web3Forms access key here (web3forms.com, create it with the email above).
+  // When this is filled in, replies are sent through Web3Forms instead of FormSubmit and no activation step is needed.
+  web3formsKey: '',
 
   // --- Venue map link (opens Google Maps). Replace with the exact Google Maps share link when you have it. ---
   venueMapUrl: 'https://www.google.com/maps/search/?api=1&query=Pont+de+Val%2C+212+Boundary+Road%2C+Parys%2C+9585%2C+Free+State%2C+South+Africa',
@@ -437,10 +440,19 @@ $('#addCal').addEventListener('click', () => {
     btn.disabled = true; btn.firstElementChild.textContent = 'Sending...';
     const debug = new URLSearchParams(location.search).has('debug');
     try {
-      const res = await fetch('https://formsubmit.co/ajax/' + CONFIG.rsvpEmail, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data),
-      });
-      const out = await res.json().catch(() => ({}));
+      let res, out;
+      if (CONFIG.web3formsKey) {
+        const w3 = Object.assign({}, data, { access_key: CONFIG.web3formsKey, subject: data._subject, from_name: 'Wedding RSVP', replyto: data.Email });
+        ['_subject', '_template', '_captcha', '_replyto'].forEach(k => delete w3[k]);
+        res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(w3),
+        });
+      } else {
+        res = await fetch('https://formsubmit.co/ajax/' + CONFIG.rsvpEmail, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data),
+        });
+      }
+      out = await res.json().catch(() => ({}));
       if (!res.ok || out.success === 'false' || out.success === false) throw new Error(out.message || ('HTTP ' + res.status));
       form.hidden = true; $('#rsvpThanks').hidden = false;
       $('#rsvpThanks').scrollIntoView({ behavior: 'smooth', block: 'center' });
