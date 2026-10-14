@@ -10,7 +10,7 @@ const CONFIG = {
   guestParam: 'guest',
 
   // --- RSVP: confirmations are emailed here (via FormSubmit.co, no server needed) ---
-  rsvpEmail: 'epiclogossa2@gmail.com',
+  rsvpEmail: 'zivanandamelia@gmail.com',
 
   // --- Venue map link (opens Google Maps). Replace with the exact Google Maps share link when you have it. ---
   venueMapUrl: 'https://www.google.com/maps/search/?api=1&query=Pont+de+Val%2C+212+Boundary+Road%2C+Parys%2C+9585%2C+Free+State%2C+South+Africa',
@@ -451,7 +451,7 @@ $('#addCal').addEventListener('click', () => {
       const mail = `mailto:${CONFIG.rsvpEmail}?subject=${encodeURIComponent(data._subject)}&body=${encodeURIComponent(body)}`;
       status.innerHTML = 'Sorry, that did not send. Please try again, or <a class="rsvp-fallback" href="' + mail + '">send your reply by email instead</a>' +
         (debug ? '<small class="rsvp-fallback">Debug: ' + String(err.message).replace(/[<>&]/g, '') + '</small>' : '');
-      btn.disabled = false; btn.firstElementChild.textContent = 'Send my reply';
+      btn.disabled = false; btn.firstElementChild.textContent = 'Confirm attendance';
     }
   });
 })();
@@ -553,4 +553,41 @@ $('#addCal').addEventListener('click', () => {
     img.addEventListener('error', next);
     if (img.complete && img.naturalWidth === 0) next();   // it already failed before this script ran
   });
+})();
+
+
+/* ---------- Hero photo: desktop vs mobile (tries common file names so a rename can't break it) ---------- */
+(function heroPhoto() {
+  const img = $('#heroImg'); if (!img) return;
+  const exts = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG', 'WEBP'];
+  const seps = ['-', '_', ' ', ''];
+  const make = kind => {
+    const out = [];
+    ['hero', 'Hero'].forEach(h => seps.forEach(sp => [kind, kind[0].toUpperCase() + kind.slice(1)].forEach(k =>
+      exts.forEach(x => out.push(`images/${h}${sp}${k}.${x}`.replace(/ /g, '%20'))))));
+    return out;
+  };
+  const lists = {
+    desktop: make('desktop').concat(['images/couple-2.jpg', 'images/couple-2.jpeg']),
+    mobile: make('mobile').concat(make('desktop'), ['images/couple-2.jpg', 'images/couple-2.jpeg']),
+  };
+  let current = '', queue = [];
+  function load(kind) {
+    if (kind === current) return;
+    current = kind; queue = lists[kind].slice();
+    next();
+  }
+  function next() {
+    const n = queue.shift();
+    if (!n) return;
+    const probe = new Image();
+    const mine = current;
+    probe.onload = () => { if (mine === current) img.src = n; };
+    probe.onerror = () => { if (mine === current) next(); };
+    probe.src = n;
+  }
+  const mq = window.matchMedia('(max-width: 899px)');
+  const pick = () => load(mq.matches ? 'mobile' : 'desktop');
+  pick();
+  (mq.addEventListener ? mq.addEventListener('change', pick) : mq.addListener(pick));
 })();
